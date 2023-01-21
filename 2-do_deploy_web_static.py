@@ -1,47 +1,33 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
 """
-@author: kgomera
+Distribute archive to web servers
 """
-from fabric.api import local, put, run, env
-from datetime import datetime
-
-env.user = 'ubuntu'
-env.hosts = ['35.227.35.75', '100.24.37.33']
+from fabric.api import put, run, env
+import os
 
 
-def do_pack():
-    """
-    Targginng project directory into a packages as .tgz
-    """
-    now = datetime.now().strftime("%Y%m%d%H%M%S")
-    local('sudo mkdir -p ./versions')
-    path = './versions/web_static_{}'.format(now)
-    local('sudo tar -czvf {}.tgz web_static'.format(path))
-    name = '{}.tgz'.format(path)
-    if name:
-        return name
-    else:
-        return None
+env.hosts = ['142.44.167.246', '144.217.246.220']
 
 
 def do_deploy(archive_path):
-    """Deploy the boxing package tgz file
     """
+    Distribute archive to web servers
+    """
+    if not os.path.exists(archive_path):
+        return False
+    filename = os.path.basename(archive_path)
+    tmp_tar = "/tmp/{}".format(filename)
+    name, ext = os.path.splitext(filename)
+    new_folder = "/data/web_static/releases/{}".format(name)
     try:
-        archive = archive_path.split('/')[-1]
-        path = '/data/web_static/releases/' + archive.strip('.tgz')
-        current = '/data/web_static/current'
-        put(archive_path, '/tmp')
-        run('mkdir -p {}/'.format(path))
-        run('tar -xzf /tmp/{} -C {}'.format(archive, path))
-        run('rm /tmp/{}'.format(archive))
-        run('mv {}/web_static/* {}'.format(path, path))
-        run('rm -rf {}/web_static'.format(path))
-        run('rm -rf {}'.format(current))
-        run('ln -s {} {}'.format(path, current))
-        print('New version deployed!')
+        put(archive_path, tmp_tar)
+        run("mkdir -p {}".format(new_folder))
+        run("tar -xzf {} -C {}".format(tmp_tar, new_folder))
+        run("rm {}".format(tmp_tar))
+        run("mv {}/web_static/* {}/".format(new_folder, new_folder))
+        run("rm -rf {}/web_static".format(new_folder))
+        run("rm -rf /data/web_static/current")
+        run("ln -s {} /data/web_static/current".format(new_folder))
         return True
     except:
         return False
-
