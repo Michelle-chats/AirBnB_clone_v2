@@ -1,34 +1,43 @@
 #!/usr/bin/python3
-"""Starts a Flask web application.
-The application listens on 0.0.0.0, port 5000.
-Routes:
-    /: Displays 'Hello HBNB!'.
-    /hbnb: Displays 'HBNB'.
-    /c/<text>: Displays 'C' followed by the value of <text>.
-"""
+"""script that starts a Flask web application"""
+
+
+# import Flask class from flask module
 from flask import Flask
 
+# create an instance called app of the class by passong the __name__ variable
 app = Flask(__name__)
+app.url_map.strict_slashes = False
 
 
-@app.route("/", strict_slashes=False)
-def hello_hbnb():
-    """Displays 'Hello HBNB!'."""
-    return "Hello HBNB!"
+@app.route('/')
+def index():
+    """display "Hello HBNB!"
+    Returns:
+        str: text on the index page
+    """
+    return 'Hello HBNB!'
 
 
-@app.route("/hbnb", strict_slashes=False)
-def hbnb():
-    """Displays 'HBNB'."""
-    return "HBNB"
+@app.route('/hbnb')
+def hbnb_route():
+    """display "HBNB
+    Returns:
+        str: text on the page
+    """
+    return 'HBNB'
 
 
-@app.route("/c/<text>", strict_slashes=False)
-def c(text):
-    """Displays 'C' followed by the value of <text>."""
-    text = text.replace("_", " ")
-    return "C {}".format(text)
+@app.route('/c/<text>')
+def c_route(text):
+    """display "C", followed by the value of the text variable
+    Args:
+        text (str): text to be served on the page
+    Returns:
+        str: text on the page
+    """
+    return 'C {}'.format(text.replace('_', ' '))
 
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0")
+if __name__ == '__main__':
+    app.run(debug=True)

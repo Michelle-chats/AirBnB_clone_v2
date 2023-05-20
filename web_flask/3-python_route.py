@@ -1,47 +1,55 @@
 #!/usr/bin/python3
-"""Starts a Flask web application.
-The application listens on 0.0.0.0, port 5000.
-Routes:
-    /: Displays 'Hello HBNB!'.
-    /hbnb: Displays 'HBNB'.
-    /c/<text>: Displays 'C' followed by the value of <text>.
-    /python/(<text>): Displays 'Python' followed by the value of <text>.
-"""
+"""script that starts a Flask web application"""
+
+
+# import Flask class from flask module
 from flask import Flask
 
+# create an instance called app of the class by passong the __name__ variable
 app = Flask(__name__)
+app.url_map.strict_slashes = False
 
 
-@app.route("/", strict_slashes=False)
-def hello_hbnb():
-    """Displays 'Hello HBNB!'."""
-    return "Hello HBNB!"
-
-
-@app.route("/hbnb", strict_slashes=False)
-def hbnb():
-    """Displays 'HBNB'."""
-    return "HBNB"
-
-
-@app.route("/c/<text>", strict_slashes=False)
-def c(text):
-    """Displays 'C' followed by the value of <text>.
-    Replaces any underscores in <text> with slashes.
+@app.route('/')
+def index():
+    """display "Hello HBNB!"
+    Returns:
+        str: text on the index page
     """
-    text = text.replace("_", " ")
-    return "C {}".format(text)
+    return 'Hello HBNB!'
 
 
-@app.route("/python", strict_slashes=False)
-@app.route("/python/<text>", strict_slashes=False)
-def python(text="is cool"):
-    """Displays 'Python' followed by the value of <text>.
-    Replaces any underscores in <text> with slashes.
+@app.route('/hbnb')
+def hbnb_route():
+    """display "HBNB"
+    Returns:
+        str: text on the page
     """
-    text = text.replace("_", " ")
-    return "Python {}".format(text)
+    return 'HBNB'
 
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0")
+@app.route('/c/<text>')
+def c_route(text):
+    """display "C", followed by the value of the text variable
+    Args:
+        text (str): text to be served on the page
+    Returns:
+        str: text on the page
+    """
+    return 'C {}'.format(text.replace('_', ' '))
+
+
+@app.route('/python', defaults={'text': 'is cool'})
+@app.route('/python/<text>')
+def python_route(text):
+    """display "Python", followed by the value of the text variable
+    Args:
+        text (str): text to be served on the page
+    Returns:
+        str: text on the page
+    """
+    return 'Python {}'.format(text.replace('_', ' '))
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
